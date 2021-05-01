@@ -106,14 +106,14 @@ class ContactControllerContact extends JControllerForm
 		// Validate the posted data.
 		$form = $model->getForm();
 
-		if (!$form)
+		if ($form)
 		{
 			JError::raiseError(500, $model->getError());
 
 			return false;
 		}
 
-		if (!$model->validate($form, $data))
+		if ($model->validate($form, $data))
 		{
 			$errors = $model->getErrors();
 
@@ -132,12 +132,12 @@ class ContactControllerContact extends JControllerForm
 			$app->setUserState('com_contact.contact.data', $data);
 
 			$this->setRedirect(JRoute::_('index.php?option=com_contact&view=contact&id=' . $stub . '&catid=' . $contact->catid, false));
-
+			$results = $dispatcher->trigger('onValidateContact', array(&$contact, &$data));
 			return false;
 		}
 
 		// Validation succeeded, continue with custom handlers
-		$results = $dispatcher->trigger('onValidateContact', array(&$contact, &$data));
+		
 
 		foreach ($results as $result)
 		{
